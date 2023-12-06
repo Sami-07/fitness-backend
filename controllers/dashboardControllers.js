@@ -154,9 +154,9 @@ export async function foodNutrients(req, res) {
   const body = req.body;
   const foodName = body.foodName;
   const MY_URL = `https://api.api-ninjas.com/v1/nutrition?query=${foodName}`
-  const MY_API_KEY = "gsJrbtNsVDhqnxauhNzWyBOR4DGGDCfYcDRaBazA";
+  const MY_API_KEY = ;
   try {
-    const response = await fetch(MY_URL, { headers: { 'X-Api-Key': MY_API_KEY } })
+    const response = await fetch(MY_URL, { headers: { 'X-Api-Key':process.env.API_NINJAS_API_KEY } })
     const result = await response.json();
     // return result;
     res.json({ data: result });
