@@ -1,13 +1,32 @@
 import TrackFood from "../models/trackFoodData.js";
 import CustomMeal from "../models/CustomMeal.js"
+import admin from "firebase-admin"
+import serviceAccount from "../config/serviceAccount.json" assert {type: "json"}
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+})
+
+
+
+
 export async function getTodayMeals(req, res) {
   try {
+    const idToken = req.headers.authorization.split(' ')[1];
+   
+    if (idToken) {
 
-    const todayDate = new Date().toLocaleDateString();
-    //TODO : use dynamic email when auth is implemented
-    const mealsData = await TrackFood.find({ addedAt: todayDate, email: "s.a.sami359359@gmail.com" });
-    // console.log("server data", mealsData);
-    res.json({ data: mealsData })
+  
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+   
+      const todayDate = new Date().toLocaleDateString();
+      //TODO : use dynamic email when auth is implemented
+      const mealsData = await TrackFood.find({ addedAt: todayDate, email: decodedToken.email });
+   
+      res.json({ data: mealsData })
+    }
+    else {
+      res.redirect("/register")
+    }
   }
   catch (err) {
     res.status(404).json({ message: err.message })
@@ -154,9 +173,9 @@ export async function foodNutrients(req, res) {
   const body = req.body;
   const foodName = body.foodName;
   const MY_URL = `https://api.api-ninjas.com/v1/nutrition?query=${foodName}`
-  const MY_API_KEY = ;
+
   try {
-    const response = await fetch(MY_URL, { headers: { 'X-Api-Key':process.env.API_NINJAS_API_KEY } })
+    const response = await fetch(MY_URL, { headers: { 'X-Api-Key': process.env.API_NINJAS_API_KEY } })
     const result = await response.json();
     // return result;
     res.json({ data: result });
@@ -177,21 +196,21 @@ export async function getExistingMealNutrients(req, res) {
       ...meal[foodName]
     }
   }
- 
+
   res.json(obj);
 
 
 }
 export async function getAllCustomMeals(req, res) {
-  console.log("hello")
+ 
   const result = await CustomMeal.find({ email: "s.a.sami359359@gmail.com" });
-  // console.log("server data", result);
+ 
 
   res.json({ data: result });
 }
 export async function addCustomMeal(req, res) {
   const { email, mealName, calories, protein, fats, fiber, carbs, sugar } = req.body;
-  console.log("check")
+
   let newMeal = new CustomMeal({
     email, mealName, calories, protein, fats, fiber, carbs, sugar
   })
@@ -200,7 +219,7 @@ export async function addCustomMeal(req, res) {
 export async function removeMeal(req, res) {
   const todayDate = new Date().toLocaleDateString();
   const { foodItem, mealType } = req.body;
-  console.log("type", mealType)
+
   let result = await TrackFood.findOne({ addedAt: todayDate, email: "s.a.sami359359@gmail.com" })
   switch (mealType) {
     case "breakfast":
