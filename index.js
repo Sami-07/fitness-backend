@@ -8,7 +8,7 @@ import 'dotenv/config'
 import User from "./models/User.js";
 // import  admin from "firebase-admin"
 // import serviceAccount from "./config/serviceAccount.json" assert {type: "json"}
-
+import admin from "firebase-admin"
 const app = express();
 app.use(bodyParser.json({ limit: "30mb", extended: true }))
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }))
@@ -37,18 +37,16 @@ mongoose.connect(process.env.MONGODB_URI)
 //     }
 // });
 
-app.post("/register", function (req, res) {
- 
+app.post("/register", async function (req, res) {
+    let user = new User({
+        name: req.body.userName,
+        email: req.body.email
+    })
+    await user.save();
 
 })
-app.get("/checkauth", function (req, res) {
-    if (req.isAuthenticated()) {
-        res.json({ status: true })
-    }
-    else {
-        res.json({ status: false })
-    }
-})
+
+
 
 
 

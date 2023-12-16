@@ -1,5 +1,5 @@
 import express from "express";
-import { getTodayMeals, addBreakfast, addMorningSnacks, addLunch, addEveningSnacks, addDinner, foodNutrients, getAllCustomMeals, addCustomMeal, removeMeal, getExistingMealNutrients } from "../controllers/dashboardControllers.js"
+import { getTodayMeals, addBreakfast, addMorningSnacks, addLunch, addEveningSnacks, addDinner, foodNutrients, getAllCustomMeals, addCustomMeal, removeMeal, getExistingMealNutrients, addAssessmentDetails, addBodyWeight, getTodayBodyWeight, updateBodyWeight } from "../controllers/dashboardControllers.js"
 const router = express.Router();
 
 router.get("/getmeals", getTodayMeals)
@@ -14,4 +14,8 @@ router.get("/getallcustommeals", getAllCustomMeals);
 router.post("/addcustommeal", addCustomMeal);
 router.post("/removemeal", removeMeal)
 router.post("/getexistingmealnutrients", getExistingMealNutrients);
+router.post("/addassessmentdetails", addAssessmentDetails)
+router.post("/addbodyweight", addBodyWeight)
+router.get("/gettodaysbodyweight", getTodayBodyWeight)
+router.post("/updatebodyweight", updateBodyWeight)
 export default router;
