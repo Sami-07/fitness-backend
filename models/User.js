@@ -1,28 +1,21 @@
-
 import mongoose from "mongoose";
-
 const userSchema = mongoose.Schema({
 
     name: String,
-    email: {
-        type: String,
-        unique: true
-    },
-    password: String,
+    email: String,
     age: Number,
     gender: String,
+    height: String,
     weight: Number,
-    goal: String,
-    goalWeight : Number
+    approach: String,
+    goalWeight: Number,
+    activityLevel: String,
+    calorieIntake : Number,
+    proteinIntake : Number
 
 }, {
-    timestamps: true // This option adds createdAt and updatedAt fields
+    timestamps: true
 })
 
-
 const User = mongoose.model("User", userSchema)
-
-
-
-
 export default User;

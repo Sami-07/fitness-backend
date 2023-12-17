@@ -37,13 +37,16 @@ mongoose.connect(process.env.MONGODB_URI)
 //     }
 // });
 
-app.post("/register", async function (req, res) {
+app.post("/register", async function (req, res){
+    const {userName, email} = req.body;
+    console.log("username", userName);
+    console.log("email", email);
     let user = new User({
         name: req.body.userName,
         email: req.body.email
     })
     await user.save();
-
+console.log("saved")
 })
 
 

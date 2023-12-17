@@ -4,22 +4,47 @@ import TrackWeight from "../models/TrackWeight.js";
 import admin from "firebase-admin";
 import serviceAccount from "../config/serviceAccount.json" assert {type: "json"}
 import User from "../models/User.js";
+import { calculateIntake } from "../modules/calorieCalculator.js";
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 })
 //TODO : check if decodedToken is valid instead of idToken AND only then proceed with the database changes.
 export async function addAssessmentDetails(req, res) {
-  const { age, gender, weight, goal, goalWeight } = req.body;
+  const { age, gender, height, weight, approach, goalWeight, activityLevel } = req.body;
   const idToken = req.headers.authorization.split(' ')[1];
   if (idToken) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const updateUserDetails = await User.findOneAndUpdate({ email: decodedToken.email }, { age, weight, goal, gender, goalWeight })
+    const updateUserDetails = await User.findOneAndUpdate({ email: decodedToken.email }, { age, gender, height, weight, approach, goalWeight, activityLevel })
     if (updateUserDetails) {
       res.json({ status: true })
     }
     else {
       res.json({ status: false })
     }
+  }
+}
+
+
+export async function getUserAssessment(req, res) {
+  const idToken = req.headers.authorization.split(' ')[1];
+  if (idToken) {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const data = await User.findOne({ email: decodedToken.email })
+    if (data) {
+      res.json({ age: data.age, weight: data.weight, height: data.height, gender: data.gender, goalWeight: data.goalWeight, activityLevel: data.activityLevel, approach: data.approach, calorieIntake: data.calorieIntake, proteinIntake: data.proteinIntake })
+    }
+  }
+}
+
+export async function calculateMacroIntake(req, res) {
+  const idToken = req.headers.authorization.split(' ')[1];
+  if (idToken) {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { weight, height, age, gender, activityLevel, approach } = await User.findOne({ email: decodedToken.email })
+    const { dailyCalories, proteinIntake } = calculateIntake({ weight, height, age, gender, activityLevel, approach })
+    console.log("user intake calories", dailyCalories);
+    console.log("user protein intake", proteinIntake);
+    await User.findOneAndUpdate({ email: decodedToken.email }, { calorieIntake: dailyCalories, proteinIntake: proteinIntake })
   }
 }
 
@@ -42,6 +67,12 @@ export async function addBodyWeight(req, res) {
       })
       const saved = await bodyWeightData.save();
       if (saved) {
+        //UPDATING the current Logged weight in the users database.
+        await User.findOneAndUpdate({ email: decodedToken.email }, { weight: weight })
+        //UPDATING the calorie and protein intake in the users database because weight is changed.
+        const { weight, height, age, gender, activityLevel, approach } = await User.findOne({ email: decodedToken.email })
+        const { dailyCalories, proteinIntake } = calculateIntake({ weight, height, age, gender, activityLevel, approach })
+        await User.findOneAndUpdate({ email: decodedToken.email }, { calorieIntake: dailyCalories, proteinIntake: proteinIntake })
         res.json({ status: true })
       }
       else {
@@ -62,6 +93,12 @@ export async function updateBodyWeight(req, res) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const data = await TrackWeight.findOneAndUpdate({ email: decodedToken.email, createdAt: date }, { weight: weight })
     if (data) {
+      //UPDATING the current Logged weight in the users database.
+      await User.findOneAndUpdate({ email: decodedToken.email }, { weight: weight })
+      //UPDATING the calorie and protein intake in the users database because weight is changed.
+      const { weight, height, age, gender, activityLevel, approach } = await User.findOne({ email: decodedToken.email })
+      const { dailyCalories, proteinIntake } = calculateIntake({ weight, height, age, gender, activityLevel, approach })
+      await User.findOneAndUpdate({ email: decodedToken.email }, { calorieIntake: dailyCalories, proteinIntake: proteinIntake })
       res.json({ status: true })
     }
     else {
@@ -89,6 +126,18 @@ export async function getTodayBodyWeight(req, res) {
     }
   }
 }
+
+export async function fetchresults(req, res) {
+  const { term } = req.body;
+  console.log("term", term);
+  const MY_URL = `https://api.api-ninjas.com/v1/nutrition?query=${term}`
+  const response = await fetch(MY_URL, { headers: { 'X-Api-Key': process.env.API_NINJAS_API_KEY } })
+  const result = await response.json();
+  console.log("search res", result);
+  res.json({ data: result });
+}
+
+
 export async function getTodayMeals(req, res) {
   try {
     const idToken = req.headers.authorization.split(' ')[1];
