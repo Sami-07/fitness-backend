@@ -37,16 +37,37 @@ mongoose.connect(process.env.MONGODB_URI)
 //     }
 // });
 
-app.post("/register", async function (req, res){
-    const {userName, email} = req.body;
-    console.log("username", userName);
-    console.log("email", email);
+app.post("/register", async function (req, res) {
+    const { userName, email } = req.body;
+
+
     let user = new User({
         name: req.body.userName,
         email: req.body.email
     })
     await user.save();
-console.log("saved")
+
+})
+app.post("/registergoogleuser", async function (req, res) {
+    const { displayName, email } = req.body;
+
+    let data = await User.findOne({ email: email });
+    if (data) {
+
+        res.json({ status: true });
+    }
+    else {
+
+        let user = new User({
+            name: req.body.displayName,
+            email: req.body.email
+        })
+        await user.save();
+        res.json({ status: true })
+    }
+
+
+
 })
 
 
