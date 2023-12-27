@@ -468,7 +468,11 @@ export async function getExercises(req, res) {
 
   const response = await fetch(`https://api.api-ninjas.com/v1/exercises?muscle=${req.body.muscle}`, { headers: { 'X-Api-Key': process.env.API_NINJAS_API_KEY } })
   const x = await response.json()
+  console.log("these aree exercises", x);
 
+  if (req.body.muscle === "chest") {
+    x.push({ name: "Seated Chest Press" }, { name: "Seated Flyes" }, { name: "Decline Dumbbell Press" })
+  }
   res.json({ status: true, result: x })
 }
 
@@ -617,5 +621,21 @@ export async function fetchWorkoutForADay(req, res) {
     else {
       res.json({ status: false })
     }
+  }
+}
+export async function getAllExercises(req, res) {
+  const idToken = req.headers.authorization.split(' ')[1];
+  if (idToken) {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const response = await fetch(`https://api.api-ninjas.com/v1/exercises`, { headers: { 'X-Api-Key': process.env.API_NINJAS_API_KEY } })
+    const x = await response.json()
+console.log("fjsdfjdsf")
+    x.push({ name: "Seated Chest Press" }, { name: "Seated Flyes" }, { name: "Decline Dumbbell Press" })
+    const names = x.map(each => {
+      console.log(each.name);
+      return (each.name)
+    });
+    console.log("names", names.length);
+    res.json({ status: true, result: x })
   }
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import { getTodayMeals, addBreakfast, addMorningSnacks, addLunch, addEveningSnacks, addDinner, foodNutrients, getAllCustomMeals, addCustomMeal, removeMeal, getExistingMealNutrients, addAssessmentDetails, addBodyWeight, getTodayBodyWeight, updateBodyWeight, fetchresults, getUserAssessment, calculateMacroIntake, getGoogleFitnessInfo, getExercises, addWorkout, getWorkoutDetails, editWorkoutDay, editSet, deleteSet, fetchWorkoutForADay } from "../controllers/dashboardControllers.js"
+import { getTodayMeals, addBreakfast, addMorningSnacks, addLunch, addEveningSnacks, addDinner, foodNutrients, getAllCustomMeals, addCustomMeal, removeMeal, getExistingMealNutrients, addAssessmentDetails, addBodyWeight, getTodayBodyWeight, updateBodyWeight, fetchresults, getUserAssessment, calculateMacroIntake, getGoogleFitnessInfo, getExercises, addWorkout, getWorkoutDetails, editWorkoutDay, editSet, deleteSet, fetchWorkoutForADay, getAllExercises } from "../controllers/dashboardControllers.js"
 const router = express.Router();
 
 router.get("/getmeals", getTodayMeals)
@@ -29,4 +29,5 @@ router.post("/editworkoutday", editWorkoutDay);
 router.post("/editset", editSet);
 router.post("/deleteset", deleteSet);
 router.post("/fetchworkoutforaday", fetchWorkoutForADay);
+router.get("/getallexercises", getAllExercises);
 export default router;
