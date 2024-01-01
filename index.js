@@ -80,5 +80,5 @@ app.post("/registergoogleuser", async function (req, res) {
 
 
 
-//here, all the routes inside dashboardRoutes starts from "https://localhost:300/dashboard"
+//here, all the routes inside dashboardRoutes starts from "https://fitness-webapp-backend.vercel.app/dashboard"
 app.use("/dashboard", dashboardRoutes);
