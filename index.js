@@ -18,7 +18,12 @@ app.use(cors({
     methods: ["POST", "GET"],
     credentials: true
 }));
-
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://fitness-freak-xi.vercel.app');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 // admin.initializeApp({
 //     credential: admin.credential.cert(serviceAccount)
 // })
