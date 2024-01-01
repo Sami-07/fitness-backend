@@ -7,10 +7,7 @@ import 'dotenv/config'
 import User from "./models/User.js";
 
 const app = express();
-app.use(cors({
-    origin: "https://fitness-freak-xi.vercel.app",
-    methods: ["GET", "POST"]
-}))
+
 // const corsOptions = {
 //     // 
 //     origin: 'https://fitness-freak-xi.vercel.app', // Replace with the origin of your frontend application
