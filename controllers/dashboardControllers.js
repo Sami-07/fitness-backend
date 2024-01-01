@@ -13,13 +13,38 @@ import { google } from "googleapis";
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 })
+
+
+
+export async function registerFunction(req, res) {
+  let user = new User({
+    name: req.body.userName,
+    email: (req.body.email).toLowerCase()
+  })
+  await user.save();
+}
+export async function registerWithGoogle(req, res) {
+  const { displayName, email } = req.body;
+  let data = await User.findOne({ email: email });
+  if (data) {
+    res.json({ status: true });
+  }
+  else {
+    let user = new User({
+      name: req.body.displayName,
+      email: req.body.email
+    })
+    await user.save();
+    res.json({ status: true })
+  }
+}
 //TODO : check if decodedToken is valid instead of idToken AND only then proceed with the database changes.
 export async function addAssessmentDetails(req, res) {
   const { age, gender, height, weight, approach, goalWeight, activityLevel } = req.body;
   const idToken = req.headers.authorization.split(' ')[1];
   if (idToken) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    
+
     const initialWeight = weight;
     const updateUserDetails = await User.findOneAndUpdate({ email: decodedToken.email }, { age, gender, height, initialWeight, weight, approach, goalWeight, activityLevel })
 
@@ -472,7 +497,7 @@ export async function getExercises(req, res) {
 
   const response = await fetch(`https://api.api-ninjas.com/v1/exercises?muscle=${req.body.muscle}`, { headers: { 'X-Api-Key': process.env.API_NINJAS_API_KEY } })
   const x = await response.json()
-  
+
 
   if (req.body.muscle === "chest") {
     x.push({ name: "Seated Chest Press" }, { name: "Seated Flyes" }, { name: "Decline Dumbbell Press" })
@@ -555,17 +580,17 @@ export async function editWorkoutDay(req, res) {
 }
 export async function editSet(req, res) {
   const { editExercise, editWeight, editReps, prevWeight, prevReps } = req.body;
-  
+
   const date = new Date().toLocaleDateString();
   const idToken = req.headers.authorization.split(' ')[1];
   if (idToken) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const workout = await Workout.findOne({ email: decodedToken.email, createdAt: date })
-    
+
     const newWorkout = workout.workoutDetails[editExercise].map(eachSet => {
-      
+
       if (eachSet.weight === prevWeight && eachSet.reps === prevReps) {
-        
+
         return (
           { weight: Number(editWeight), reps: Number(editReps) }
         )
@@ -577,7 +602,7 @@ export async function editSet(req, res) {
       }
     })
     const newWorkoutDetails = { ...workout.workoutDetails, [editExercise]: newWorkout }
-    
+
     const updateWorkout = await Workout.findOneAndUpdate({ email: decodedToken.email, createdAt: date }, { workoutDetails: newWorkoutDetails });
     if (updateWorkout) {
       res.json({ status: true, message: "Edited set successfully" })
@@ -633,13 +658,13 @@ export async function getAllExercises(req, res) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const response = await fetch(`https://api.api-ninjas.com/v1/exercises`, { headers: { 'X-Api-Key': process.env.API_NINJAS_API_KEY } })
     const x = await response.json()
-    
+
     x.push({ name: "Seated Chest Press" }, { name: "Seated Flyes" }, { name: "Decline Dumbbell Press" })
     const names = x.map(each => {
-      
+
       return (each.name)
     });
-    
+
     res.json({ status: true, result: x })
   }
 }
@@ -681,7 +706,7 @@ export async function getGoogleFitSteps(req, res) {
 
 export async function addWater(req, res) {
   try {
-    
+
     const date = new Date().toLocaleDateString();
 
     const idToken = req.headers.authorization.split(' ')[1]
@@ -705,7 +730,7 @@ export async function addWater(req, res) {
         })
         await newFoodData.save();
       }
-      
+
       res.json({ status: true, msg: " logged water intake" })
     }
   }
@@ -716,13 +741,13 @@ export async function addWater(req, res) {
 }
 export async function fetchWaterIntake(req, res) {
   try {
-    
+
     const date = new Date().toLocaleDateString();
     const idToken = req.headers.authorization.split(' ')[1];
     if (idToken) {
       const decodedToken = await admin.auth().verifyIdToken(idToken);
       const foodData = await TrackFood.findOne({ addedAt: date, email: decodedToken.email })
-      
+
       if (foodData) {
         res.json({ status: true, waterIntake: foodData.waterIntake })
       }
