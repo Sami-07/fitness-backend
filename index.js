@@ -7,18 +7,15 @@ import 'dotenv/config'
 import User from "./models/User.js";
 
 const app = express();
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://fitness-freak-xi.vercel.app');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-      res.status(200).end();
-    } else {
-      next();
-    }
-  });
+const cors = require('cors');    
+const corsOpts = {
+    origin: 'https://fitness-freak-xi.vercel.app',
+    credentials: true,
+    methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
+    allowedHeaders: ['Content-Type'],
+    exposedHeaders: ['Content-Type']
+};
+app.use(cors(corsOpts));
 // app.use(cors({
 //     origin: "https://fitness-freak-xi.vercel.app",
 //     methods: ["POST", "GET"],
