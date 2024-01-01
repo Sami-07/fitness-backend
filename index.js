@@ -10,6 +10,7 @@ const app = express();
 const corsOptions = {
     // 
     origin: 'https://fitness-freak-xi.vercel.app', // Replace with the origin of your frontend application
+    
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Specify the allowed HTTP methods
     allowedHeaders: 'Content-Type,Authorization', // Specify the allowed headers
