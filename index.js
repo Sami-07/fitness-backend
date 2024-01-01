@@ -22,9 +22,10 @@ app.use(cors({
 // admin.initializeApp({
 //     credential: admin.credential.cert(serviceAccount)
 // })
+const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => app.listen(5000, () => console.log("Server is running on port 5000")))
+    .then(() => app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)))
     .catch(err => console.log(err.message));
 
 // app.use(async (req, res, next) => {
