@@ -62,10 +62,11 @@ export async function getUserAssessment(req, res) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const data = await User.findOne({ email: decodedToken.email })
     if (data) {
+      res.set("Access-Control-Allow-Origin", "https://fitness-freak-xi.vercel.app")
       res.json({ age: data.age, initialWeight: data.initialWeight, weight: data.weight, height: data.height, gender: data.gender, goalWeight: data.goalWeight, activityLevel: data.activityLevel, approach: data.approach, calorieIntake: data.calorieIntake, proteinIntake: data.proteinIntake })
     }
   }
- 
+
 }
 
 export async function calculateMacroIntake(req, res) {
