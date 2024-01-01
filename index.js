@@ -7,29 +7,11 @@ import 'dotenv/config'
 import User from "./models/User.js";
 
 const app = express();
-const cors = require('cors');    
-const corsOpts = {
-    origin: 'https://fitness-freak-xi.vercel.app',
-    credentials: true,
-    methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
-    allowedHeaders: ['Content-Type'],
-    exposedHeaders: ['Content-Type']
-};
-app.use(cors(corsOpts));
-// app.use(cors({
-//     origin: "https://fitness-freak-xi.vercel.app",
-//     methods: ["POST", "GET"],
-//     credentials: true
-// }));
-// app.use(bodyParser.json({ limit: "30mb", extended: true }))
-// app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }))
+app.use(cors());
+app.use(bodyParser.json({ limit: "30mb", extended: true }))
+app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }))
 
-// app.use((req, res, next) => {
-//     res.header('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-//     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//     next();
-// });
+
 
 const PORT = process.env.PORT || 5000;
 
