@@ -7,7 +7,18 @@ import 'dotenv/config'
 import User from "./models/User.js";
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+    origin: 'fitness-freak-xi.vercel.app', // Replace with the origin of your frontend application
+    credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Specify the allowed HTTP methods
+    allowedHeaders: 'Content-Type,Authorization', // Specify the allowed headers
+    exposedHeaders: 'Content-Length', // Specify the headers exposed to the client
+    preflightContinue: false, // Disable preflight requests caching
+    optionsSuccessStatus: 204, // Set the response status for successful CORS preflight requests
+};
+
+// Use CORS middleware with options
+app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "30mb", extended: true }))
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }))
 
