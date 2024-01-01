@@ -8,6 +8,7 @@ import User from "./models/User.js";
 
 const app = express();
 const corsOptions = {
+    // 
     origin: 'https://fitness-freak-xi.vercel.app', // Replace with the origin of your frontend application
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Specify the allowed HTTP methods
