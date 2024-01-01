@@ -65,6 +65,7 @@ export async function getUserAssessment(req, res) {
       res.json({ age: data.age, initialWeight: data.initialWeight, weight: data.weight, height: data.height, gender: data.gender, goalWeight: data.goalWeight, activityLevel: data.activityLevel, approach: data.approach, calorieIntake: data.calorieIntake, proteinIntake: data.proteinIntake })
     }
   }
+  res.json({ status: false })
 }
 
 export async function calculateMacroIntake(req, res) {
