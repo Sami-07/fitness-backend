@@ -43,8 +43,9 @@ app.post("/register", async function (req, res) {
 
     let user = new User({
         name: req.body.userName,
-        email: req.body.email
+        email: (req.body.email).toLowerCase()
     })
+    
     await user.save();
 
 })

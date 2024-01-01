@@ -1,5 +1,5 @@
 import express from "express";
-import { getTodayMeals, addBreakfast, addMorningSnacks, addLunch, addEveningSnacks, addDinner, foodNutrients, getAllCustomMeals, addCustomMeal, removeMeal, getExistingMealNutrients, addAssessmentDetails, addBodyWeight, getTodayBodyWeight, updateBodyWeight, fetchresults, getUserAssessment, calculateMacroIntake, getGoogleFitnessInfo, getExercises, addWorkout, getWorkoutDetails, editWorkoutDay, editSet, deleteSet, fetchWorkoutForADay, getAllExercises } from "../controllers/dashboardControllers.js"
+import { getTodayMeals, addBreakfast, addMorningSnacks, addLunch, addEveningSnacks, addDinner, foodNutrients, getAllCustomMeals, addCustomMeal, removeMeal, getExistingMealNutrients, addAssessmentDetails, addBodyWeight, getTodayBodyWeight, updateBodyWeight, fetchresults, getUserAssessment, calculateMacroIntake, getGoogleFitnessInfo, getExercises, addWorkout, getWorkoutDetails, editWorkoutDay, editSet, deleteSet, fetchWorkoutForADay, getAllExercises, getGoogleFitSteps, addWater, fetchWaterIntake } from "../controllers/dashboardControllers.js"
 const router = express.Router();
 
 router.get("/getmeals", getTodayMeals)
@@ -30,4 +30,7 @@ router.post("/editset", editSet);
 router.post("/deleteset", deleteSet);
 router.post("/fetchworkoutforaday", fetchWorkoutForADay);
 router.get("/getallexercises", getAllExercises);
+router.get("/getgooglesteps",getGoogleFitSteps);
+router.post("/addwater", addWater);
+router.get("/fetchwaterintake", fetchWaterIntake);
 export default router;

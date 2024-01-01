@@ -4,9 +4,12 @@ import TrackWeight from "../models/TrackWeight.js";
 import admin from "firebase-admin";
 import serviceAccount from "../config/serviceAccount.json" assert {type: "json"}
 import User from "../models/User.js";
-import { google } from "googleapis";
+
+import { OAuth2Client } from 'google-auth-library';
+
 import { calculateIntake } from "../modules/calorieCalculator.js";
 import Workout from "../models/Workout.js";
+import { google } from "googleapis";
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 })
@@ -16,6 +19,7 @@ export async function addAssessmentDetails(req, res) {
   const idToken = req.headers.authorization.split(' ')[1];
   if (idToken) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
+    
     const initialWeight = weight;
     const updateUserDetails = await User.findOneAndUpdate({ email: decodedToken.email }, { age, gender, height, initialWeight, weight, approach, goalWeight, activityLevel })
 
@@ -468,7 +472,7 @@ export async function getExercises(req, res) {
 
   const response = await fetch(`https://api.api-ninjas.com/v1/exercises?muscle=${req.body.muscle}`, { headers: { 'X-Api-Key': process.env.API_NINJAS_API_KEY } })
   const x = await response.json()
-  console.log("these aree exercises", x);
+  
 
   if (req.body.muscle === "chest") {
     x.push({ name: "Seated Chest Press" }, { name: "Seated Flyes" }, { name: "Decline Dumbbell Press" })
@@ -551,17 +555,17 @@ export async function editWorkoutDay(req, res) {
 }
 export async function editSet(req, res) {
   const { editExercise, editWeight, editReps, prevWeight, prevReps } = req.body;
-  console.log("old reps and weight ", req.body)
+  
   const date = new Date().toLocaleDateString();
   const idToken = req.headers.authorization.split(' ')[1];
   if (idToken) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const workout = await Workout.findOne({ email: decodedToken.email, createdAt: date })
-    console.log("wporkout set", workout.workoutDetails[editExercise]);
+    
     const newWorkout = workout.workoutDetails[editExercise].map(eachSet => {
-      console.log("each", eachSet);
+      
       if (eachSet.weight === prevWeight && eachSet.reps === prevReps) {
-        console.log("true")
+        
         return (
           { weight: Number(editWeight), reps: Number(editReps) }
         )
@@ -573,7 +577,7 @@ export async function editSet(req, res) {
       }
     })
     const newWorkoutDetails = { ...workout.workoutDetails, [editExercise]: newWorkout }
-    console.log("new details", newWorkoutDetails);
+    
     const updateWorkout = await Workout.findOneAndUpdate({ email: decodedToken.email, createdAt: date }, { workoutDetails: newWorkoutDetails });
     if (updateWorkout) {
       res.json({ status: true, message: "Edited set successfully" })
@@ -629,13 +633,102 @@ export async function getAllExercises(req, res) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const response = await fetch(`https://api.api-ninjas.com/v1/exercises`, { headers: { 'X-Api-Key': process.env.API_NINJAS_API_KEY } })
     const x = await response.json()
-console.log("fjsdfjdsf")
+    
     x.push({ name: "Seated Chest Press" }, { name: "Seated Flyes" }, { name: "Decline Dumbbell Press" })
     const names = x.map(each => {
-      console.log(each.name);
+      
       return (each.name)
     });
-    console.log("names", names.length);
+    
     res.json({ status: true, result: x })
+  }
+}
+
+
+
+export async function getGoogleFitSteps(req, res) {
+  try {
+    // 
+    // const idToken = req.headers.authorization.split(' ')[1];
+    // if (idToken) {
+    //   const decodedToken = await admin.auth().verifyIdToken(idToken);
+    //   
+    //   const x =await fetch('https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Authorization': `Bearer ${idToken}`,
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //       "aggregateBy": [{
+    //         "dataTypeName": "com.google.step_count.delta",
+    //         "dataSourceId": "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps"
+    //       }],
+    //       "startTimeMillis": new Date().getTime() - 7 * 24 * 60 * 60 * 1000, // 7 days ago
+    //       "endTimeMillis": new Date().getTime(),
+    //     }),
+    //   })
+    //   
+    //   const parsedX = await x.json();
+    //   
+    // }
+  }
+  catch (err) {
+
+  }
+};
+
+
+export async function addWater(req, res) {
+  try {
+    
+    const date = new Date().toLocaleDateString();
+
+    const idToken = req.headers.authorization.split(' ')[1]
+    if (idToken) {
+      const decodedToken = await admin.auth().verifyIdToken(idToken)
+
+      const foodData = await TrackFood.findOne({ addedAt: date, email: decodedToken.email })
+      // 
+      if (foodData) {
+        if (foodData.waterIntake) {
+          const updatedFoodData = await TrackFood.findOneAndUpdate({ addedAt: date, email: decodedToken.email }, { waterIntake: foodData.waterIntake + req.body.qty })
+        }
+        else {
+          const foodData = await TrackFood.findOneAndUpdate({ addedAt: date, email: decodedToken.email }, { waterIntake: req.body.qty })
+        }
+      }
+      else {
+        const newFoodData = new TrackFood({
+          email: decodedToken.email,
+          waterIntake: req.body.qty
+        })
+        await newFoodData.save();
+      }
+      
+      res.json({ status: true, msg: " logged water intake" })
+    }
+  }
+  catch (err) {
+
+    res.json({ status: false, msg: err.message })
+  }
+}
+export async function fetchWaterIntake(req, res) {
+  try {
+    
+    const date = new Date().toLocaleDateString();
+    const idToken = req.headers.authorization.split(' ')[1];
+    if (idToken) {
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      const foodData = await TrackFood.findOne({ addedAt: date, email: decodedToken.email })
+      
+      if (foodData) {
+        res.json({ status: true, waterIntake: foodData.waterIntake })
+      }
+    }
+  }
+  catch (err) {
+    res.json({ status: false, msg: err.message })
   }
 }
