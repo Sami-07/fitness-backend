@@ -14,6 +14,22 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 })
 
+// admin.initializeApp({
+//   credential: admin.credential.cert({
+//     type: process.env.TYPE,
+//     project_id: process.env.PROJECT_ID,
+//     private_key_id: process.env.PRIVATE_KEY_ID,
+//     // private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
+//     private_key: process.env.PRIVATE_KEY,
+//     client_email: process.env.CLIENT_EMAIL,
+//     client_id: process.env.CLIENT_ID,
+//     auth_uri: process.env.AUTH_URI,
+//     token_uri: process.env.TOKEN_URI,
+//     auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
+//     client_x509_cert_url: process.env.CLIENT_X509_CERT_URL
+//   })
+// });
+
 
 
 export async function registerFunction(req, res) {
@@ -57,12 +73,13 @@ export async function addAssessmentDetails(req, res) {
 
 
 export async function getUserAssessment(req, res) {
+  res.setHeader("Access-Control-Allow-Credentials", "true")
   const idToken = req.headers.authorization.split(' ')[1];
   if (idToken) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const data = await User.findOne({ email: decodedToken.email })
     if (data) {
-     
+
       res.json({ age: data.age, initialWeight: data.initialWeight, weight: data.weight, height: data.height, gender: data.gender, goalWeight: data.goalWeight, activityLevel: data.activityLevel, approach: data.approach, calorieIntake: data.calorieIntake, proteinIntake: data.proteinIntake })
     }
   }
