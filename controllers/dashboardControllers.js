@@ -2,7 +2,7 @@ import TrackFood from "../models/trackFoodData.js";
 import CustomMeal from "../models/CustomMeal.js";
 import TrackWeight from "../models/TrackWeight.js";
 import admin from "firebase-admin";
-import serviceAccount from "../config/serviceAccount.json" assert {type: "json"}
+// import serviceAccount from "../config/serviceAccount.json" assert {type: "json"}
 import User from "../models/User.js";
 
 import { OAuth2Client } from 'google-auth-library';
@@ -10,27 +10,33 @@ import { OAuth2Client } from 'google-auth-library';
 import { calculateIntake } from "../modules/calorieCalculator.js";
 import Workout from "../models/Workout.js";
 import { google } from "googleapis";
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-})
-
+// const serviceAccountJsonString = process.env.SERVICE_ACCOUNT_JSON;
 // admin.initializeApp({
-//   credential: admin.credential.cert({
-//     type: process.env.TYPE,
-//     project_id: process.env.PROJECT_ID,
-//     private_key_id: process.env.PRIVATE_KEY_ID,
-//     // private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
-//     private_key: process.env.PRIVATE_KEY,
-//     client_email: process.env.CLIENT_EMAIL,
-//     client_id: process.env.CLIENT_ID,
-//     auth_uri: process.env.AUTH_URI,
-//     token_uri: process.env.TOKEN_URI,
-//     auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
-//     client_x509_cert_url: process.env.CLIENT_X509_CERT_URL
-//   })
-// });
+//   credential: admin.credential.cert(serviceAccount)
+// })
 
+const serviceAccount = {
+  type: process.env.SERVICE_ACCOUNT_TYPE,
+  project_id: process.env.PROJECT_ID,
+  private_key_id: process.env.PRIVATE_KEY_ID,
+  private_key: process.env.PRIVATE_KEY,
+  client_email: process.env.CLIENT_EMAIL,
+  client_id: process.env.CLIENT_ID,
+  auth_uri: process.env.AUTH_URI,
+  token_uri: process.env.TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_CERT_URL,
+  client_x509_cert_url: process.env.CLIENT_CERT_URL,
+  universe_domain: process.env.UNIVERSE_DOMAIN,
+};
 
+try {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+  console.log('Firebase Admin SDK initialized successfully');
+} catch (error) {
+  console.error('Firebase Admin SDK initialization error:', error);
+}
 
 export async function registerFunction(req, res) {
   let user = new User({
