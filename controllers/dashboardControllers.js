@@ -43,6 +43,10 @@ try {
   console.log("Service Account", serviceAccount)
 }
 
+export async function hello(req, res) {
+  res.json({ message: "Hello" })
+}
+
 export async function registerFunction(req, res) {
   let user = new User({
     name: req.body.userName,
