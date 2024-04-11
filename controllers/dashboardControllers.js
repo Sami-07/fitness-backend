@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import TrackFood from "../models/trackFoodData.js";
 import CustomMeal from "../models/CustomMeal.js";
 import TrackWeight from "../models/TrackWeight.js";
@@ -27,6 +30,7 @@ const serviceAccount = {
   auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_CERT_URL,
   client_x509_cert_url: process.env.CLIENT_CERT_URL,
   universe_domain: process.env.UNIVERSE_DOMAIN,
+
 };
 
 try {
@@ -36,6 +40,7 @@ try {
   console.log('Firebase Admin SDK initialized successfully');
 } catch (error) {
   console.error('Firebase Admin SDK initialization error:', error);
+  console.log("Service Account", serviceAccount)
 }
 
 export async function registerFunction(req, res) {
