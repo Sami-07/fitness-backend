@@ -17,7 +17,7 @@ app.use(cookieParser())
 
 app.use(cors({
     // origin: 'http://localhost:3000',
-    origin : "https://fitness-freak-xi.vercel.app",
+    origin: "https://fitness-freak-xi.vercel.app",
     credentials: true
 }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }))
@@ -28,16 +28,17 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)))
     .catch(err => console.log(err.message));
 
-    app.get("/api-health", (req, res) => {
-        res.send("Hello to Fitness Webapp API");
-    })
+app.get("/api-health", (req, res) => {
+    res.cookie("test", "test", { maxAge: 30 * 24 * 60 * 60 * 1000 })
+    res.send("Hello to Fitness Webapp API");
+})
 app.post("/register", registerFunction);
 app.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({
             email: email,
-           
+
         });
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
@@ -45,9 +46,9 @@ app.post("/login", async (req, res) => {
         }
         if (user) {
             const token = await jwt.sign({ id: user._id, name: user.name, email }, process.env.JWT_SECRET, { expiresIn: "30d" })
-      
+
             res.cookie("token", token, { maxAge: 30 * 24 * 60 * 60 * 1000 })
-            res.json({ message: "Logged in successfully", user: {name: user.name, email: user.email }});
+            res.json({ message: "Logged in successfully", user: { name: user.name, email: user.email } });
         } else {
             res.status(401).json({ message: "Invalid credentials" });
         }
@@ -63,7 +64,7 @@ app.use(validate);
 app.get("/logout", validate, (req, res) => {
     try {
         res.clearCookie("token");
-       
+
         res.json({ message: "Logged out successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error while logging out" })
