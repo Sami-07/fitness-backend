@@ -17,7 +17,9 @@ app.use(cookieParser())
 
 app.use(cors({
     // origin: 'http://localhost:3000',
-    origin: "https://fitness-freak-xi.vercel.app",
+    // origin: "https://fitness-freak-xi.vercel.app",
+    origin : "https://fitness-freak-sami07s-projects.vercel.app",
+    // origin : "*",
     credentials: true
 }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }))
