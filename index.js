@@ -33,7 +33,9 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch(err => console.log(err.message));
 
 app.get("/api-health", (req, res) => {
-    res.cookie("test", "test", { maxAge: 30 * 24 * 60 * 60 * 1000 })
+    res.cookie("test", "test", { maxAge: 30 * 24 * 60 * 60 * 1000, sameSite: "none",
+    secure: true
+    })
     res.send("Hello to Fitness Webapp API");
 })
 app.post("/register", registerFunction);
