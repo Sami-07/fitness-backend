@@ -73,7 +73,10 @@ app.use(validate);
 
 app.get("/logout", validate, (req, res) => {
     try {
-        res.clearCookie("token");
+        res.clearCookie("token" , {
+           sameSite: "none",
+            secure: true
+        });
 
         res.json({ message: "Logged out successfully" });
     } catch (error) {
