@@ -28,7 +28,9 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)))
     .catch(err => console.log(err.message));
 
-
+    app.get("/api-health", (req, res) => {
+        res.send("Hello to Fitness Webapp API");
+    })
 app.post("/register", registerFunction);
 app.post("/login", async (req, res) => {
     try {
@@ -69,9 +71,3 @@ app.get("/logout", validate, (req, res) => {
 })
 //here, all the routes inside dashboardRoutes starts from "https://fitness-webapp-backend.vercel.app/dashboard"
 app.use("/dashboard", dashboardRoutes);
-
-app.get("/", (req, res) => {
-    
-
-    res.send("Hello to Fitness Webapp API");
-})
