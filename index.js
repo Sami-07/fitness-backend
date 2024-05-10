@@ -21,7 +21,8 @@ app.use(cors({
     origin : "https://fitness-freak-sami07s-projects.vercel.app",
     // origin : "*",
     credentials: true,
-    exposedHeaders: ["set-cookie"]
+    // exposedHeaders: ["set-cookie"]
+    exposedHeaders: ["Set-cookie"],
 }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }))
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }))
