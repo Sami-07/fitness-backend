@@ -69,9 +69,7 @@ app.post("/login", async (req, res) => {
 )
 
 
-app.use(validate);
-
-app.get("/logout", validate, (req, res) => {
+app.post("/logout",  (req, res) => {
     try {
         res.clearCookie("token" , {
            sameSite: "none",
@@ -83,5 +81,7 @@ app.get("/logout", validate, (req, res) => {
         res.status(500).json({ message: "Error while logging out" })
     }
 })
+app.use(validate);
+
 //here, all the routes inside dashboardRoutes starts from "https://fitness-webapp-backend.vercel.app/dashboard"
 app.use("/dashboard", dashboardRoutes);
