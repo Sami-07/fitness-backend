@@ -56,7 +56,7 @@ app.post("/login", async (req, res) => {
 
             res.cookie("token", token, {
                 maxAge: 30 * 24 * 60 * 60 * 1000, sameSite: "none",
-                secure: true
+                
             })
             res.json({ message: "Logged in successfully", user: { name: user.name, email: user.email } });
         } else {
@@ -75,7 +75,7 @@ app.get("/logout", validate, (req, res) => {
     try {
         res.clearCookie("token" , {
            sameSite: "none",
-            secure: true
+           
         });
 
         res.json({ message: "Logged out successfully" });
