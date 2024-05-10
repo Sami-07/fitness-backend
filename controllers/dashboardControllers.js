@@ -10,6 +10,7 @@ import { calculateIntake } from "../modules/calorieCalculator.js";
 import Workout from "../models/Workout.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { domains } from 'googleapis/build/src/apis/domains/index.js';
 //authorize the user in the middleware and attach the authorization token to the request object. 
 //req.headers.authorization.split(' ')[1];
 //encrypt the pasword in /signup route.
@@ -38,13 +39,16 @@ export async function registerFunction(req, res) {
     let user = new User({
       name: req.body.userName,
       email: (req.body.email).toLowerCase(),
-      password: hashedPassword  //!encrypt the password
+      password: hashedPassword  
     })
     const savedUser = await user.save();
     if (user) {
       const token = await jwt.sign({ id: savedUser._id, name: req.body.userName, email: user.email }, process.env.JWT_SECRET, { expiresIn: "30d" })
      
-      res.cookie("token", token, { maxAge: 30 * 24 * 60 * 60 * 1000})
+      res.cookie("token", token, {
+        domains: ["https://fitness-freak-sami07s-projects.vercel.app"],
+        
+        maxAge: 30 * 24 * 60 * 60 * 1000})
      
       res.json({ status: true, message: "Registered successfully", user: { name: req.body.userName, email: req.body.email } })  
     }
