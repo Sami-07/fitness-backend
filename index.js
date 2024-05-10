@@ -1,71 +1,76 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import mongoose from "mongoose";
 import dashboardRoutes from "./routes/dashboard.js";
-import 'dotenv/config'
+
 import User from "./models/User.js";
-
+import cookieParser from 'cookie-parser'
+import { validate } from './middleware/auth.js';
+import { registerFunction } from './controllers/dashboardControllers.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 const app = express();
+app.use(cookieParser())
 
-// const corsOptions = {
-//     // 
-//     origin: 'https://fitness-freak-xi.vercel.app', // Replace with the origin of your frontend application
-
-//     credentials: true,
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Specify the allowed HTTP methods
-//     allowedHeaders: 'Content-Type,Authorization', // Specify the allowed headers
-//     exposedHeaders: 'Content-Length', // Specify the headers exposed to the client
-//     preflightContinue: false, // Disable preflight requests caching
-//     optionsSuccessStatus: 204, // Set the response status for successful CORS preflight requests
-// };
-
-// // Use CORS middleware with options
-app.use(cors());
-// app.use(cors(corsOptions));
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 app.use(bodyParser.json({ limit: "30mb", extended: true }))
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }))
 
-
-
 const PORT = process.env.PORT || 5000;
-
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)))
     .catch(err => console.log(err.message));
 
 
+app.post("/register", registerFunction);
+app.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({
+            email: email,
+           
+        });
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+        if (user) {
+            const token = await jwt.sign({ id: user._id, name: user.name, email }, process.env.JWT_SECRET, { expiresIn: "30d" })
+      
+            res.cookie("token", token, { maxAge: 30 * 24 * 60 * 60 * 1000 })
+            res.json({ message: "Logged in successfully", user: {name: user.name, email: user.email }});
+        } else {
+            res.status(401).json({ message: "Invalid credentials" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error while logging in" })
+    }
+}
+)
 
-// app.post("/register", async function (req, res) {
 
+app.use(validate);
 
-
-//     let user = new User({
-//         name: req.body.userName,
-//         email: (req.body.email).toLowerCase()
-//     })
-
-//     await user.save();
-
-// })
-// app.post("/registergoogleuser", async function (req, res) {
-//     const { displayName, email } = req.body;
-
-//     let data = await User.findOne({ email: email });
-//     if (data) {
-
-//         res.json({ status: true });
-//     }
-//     else {
-//         let user = new User({
-//             name: req.body.displayName,
-//             email: req.body.email
-//         })
-//         await user.save();
-//         res.json({ status: true })
-//     }
-
-// })
-
+app.get("/logout", validate, (req, res) => {
+    try {
+        res.clearCookie("token");
+       
+        res.json({ message: "Logged out successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error while logging out" })
+    }
+})
 //here, all the routes inside dashboardRoutes starts from "https://fitness-webapp-backend.vercel.app/dashboard"
 app.use("/dashboard", dashboardRoutes);
+
+app.get("/", (req, res) => {
+    
+
+    res.send("Hello to Fitness Webapp API");
+})

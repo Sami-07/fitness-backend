@@ -2,17 +2,22 @@ import mongoose from "mongoose";
 const userSchema = mongoose.Schema({
 
     name: String,
-    email: String,
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: String,
     age: Number,
     gender: String,
     height: String,
-    initialWeight : Number,
+    initialWeight: Number,
     weight: Number,
     approach: String,
     goalWeight: Number,
     activityLevel: String,
-    calorieIntake : Number,
-    proteinIntake : Number
+    calorieIntake: Number,
+    proteinIntake: Number
 
 }, {
     timestamps: true
