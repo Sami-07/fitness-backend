@@ -17,8 +17,8 @@ app.use(cookieParser())
 
 app.use(cors({
     // origin: 'http://localhost:3000',
-    // origin: "https://fitness-freak-xi.vercel.app",
-    origin: "https://fitness-freak-sami07s-projects.vercel.app",
+    origin: "https://fitness-freak-xi.vercel.app",
+    // origin: "https://fitness-freak-sami07s-projects.vercel.app",
     // origin : "*",
     credentials: true,
     // exposedHeaders: ["set-cookie"]
@@ -53,10 +53,10 @@ app.post("/login", async (req, res) => {
         }
         if (user) {
             const token = await jwt.sign({ id: user._id, name: user.name, email }, process.env.JWT_SECRET, { expiresIn: "30d" })
-
+           
             res.cookie("token", token, {
-                maxAge: 30 * 24 * 60 * 60 * 1000, sameSite: "none",
-                
+                maxAge: 30 * 24 * 60 * 60 * 1000,
+
             })
             res.json({ message: "Logged in successfully", user: { name: user.name, email: user.email } });
         } else {
@@ -69,12 +69,9 @@ app.post("/login", async (req, res) => {
 )
 
 
-app.post("/logout",  (req, res) => {
+app.post("/logout", (req, res) => {
     try {
-        res.clearCookie("token" , {
-           sameSite: "none",
-           
-        });
+        res.clearCookie("token");
 
         res.json({ message: "Logged out successfully" });
     } catch (error) {
