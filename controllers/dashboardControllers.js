@@ -46,10 +46,11 @@ export async function registerFunction(req, res) {
       const token = await jwt.sign({ id: savedUser._id, name: req.body.userName, email: user.email }, process.env.JWT_SECRET, { expiresIn: "30d" })
 
       res.cookie("token", token, {
-     
-      
 
         maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None'
       })
 
       res.json({ status: true, message: "Registered successfully", user: { name: req.body.userName, email: req.body.email } })
