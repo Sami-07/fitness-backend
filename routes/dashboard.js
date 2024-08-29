@@ -34,6 +34,6 @@ router.get("/getgooglesteps",getGoogleFitSteps);
 router.post("/addwater", addWater);
 router.get("/fetchwaterintake", fetchWaterIntake);
 // router.post("/register", registerFunction );
-router.get("/getcurrentuser", getCurrentUser);
+// router.get("/getcurrentuser", getCurrentUser);
 router.get("/hello", hello)
 export default router;

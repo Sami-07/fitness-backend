@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const trackFoodData = mongoose.Schema({
-    id: String,
+    _id: String,
     email: String,
     waterIntake: Number,
     breakfast: Object,

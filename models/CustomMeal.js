@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const customMealSchema = mongoose.Schema({
-    id: String,
+    _id: String,
     email: String,
     mealName: String,
     calories: Number,

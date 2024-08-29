@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const weightTrackerSchema = mongoose.Schema({
-    email: String,
+    _id: String,
     weight: Number,
     createdAt: { type: String, default: new Date().toLocaleDateString() }
 })

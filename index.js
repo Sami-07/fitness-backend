@@ -8,10 +8,20 @@ import dashboardRoutes from "./routes/dashboard.js";
 
 import User from "./models/User.js";
 import cookieParser from 'cookie-parser'
-import { validate } from './middleware/auth.js';
+// import { validate } from './middleware/auth.js';
 import { registerFunction } from './controllers/dashboardControllers.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+// import { clerkClient } from '@clerk/clerk-sdk-node'
+import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node'
+import { createClerkClient } from '@clerk/clerk-sdk-node';
+const clerkClient = createClerkClient({
+    secretKey: process.env.CLERK_SECRET_KEY,
+    publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+})
+
+
+
 const app = express();
 app.use(cookieParser())
 
@@ -71,6 +81,31 @@ app.post("/login", async (req, res) => {
 }
 )
 
+app.post("/save-user", async (req, res) => {
+    try {
+        const { id, email, name } = req.body;
+        const user = await User.findOne({
+
+            _id: id
+        });
+        if (!user) {
+            const newUser = new User({
+                _id: id,
+                email,
+                name
+            });
+            await newUser.save();
+            res.json({ message: "User saved successfully" });
+        } else {
+            console.log("User already exists")
+            res.json({ message: "User already exists" });
+        }
+    } catch (error) {
+        console.log("user  saving error", error)
+        res.status(500).json({ message: "Error while saving user" })
+    }
+
+})
 
 app.post("/logout", (req, res) => {
     try {
@@ -81,7 +116,61 @@ app.post("/logout", (req, res) => {
         res.status(500).json({ message: "Error while logging out" })
     }
 })
-app.use(validate);
+// app.use(validate);
+app.get("/current-user", async (req, res) => {
+    try {
+        if (!req.cookies.__session) {
+            return res.status(401).json({ status: false, message: "Unauthenticated!" })
+        }
+        const response = await clerkClient.verifyToken(req.cookies.__session)
+        const user = await User.findOne({
+            _id: response.sub
+        });
+        if (!user) {
+            return res.status(401).json({ status: false, message: "Unauthenticated!" })
+        }
+        console.log("valid token", {
+            id: user._id, name: user.name, email: user.email
+        })
+        res.json({ status: true, user: { id: user._id, name: user.name, email: user.email } })
+    }
+    catch (error) {
+        console.log("invalid token", error)
+        return res.status(401).json({ status: false, message: "Unauthenticated!" })
+    }
 
+})
+async function validate(req, res, next) {
+    if (!req.cookies.__session) {
+        return res.status(401).json({ message: "Unauthenticated!" })
+    }
+
+    const response = await clerkClient.verifyToken(req.cookies.__session)
+    if (!response) {
+        console.log("invalid token", response)
+        return res.status(401).json({ message: "Unauthenticated!" })
+
+    }
+
+    console.log("valid token in middleware", response)
+ 
+  
+    req.user = {
+        id: response.sub,
+    }
+    console.log("user in req.user", req.user)
+    next();
+}
+app.get(
+    '/protected-endpoint',
+
+
+    validate,
+)
+
+app.use((err, req, res, next) => {
+    console.log(req.cookies)
+    res.status(401).json({ message: "Unauthenticated!" })
+})
 //here, all the routes inside dashboardRoutes starts from "https://fitness-webapp-backend.vercel.app/dashboard"
-app.use("/dashboard", dashboardRoutes);
+app.use("/dashboard", validate, dashboardRoutes);

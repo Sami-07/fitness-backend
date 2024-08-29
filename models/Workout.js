@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const workoutSchema = mongoose.Schema({
 
-    email: String,
+  _id : String,
     workoutDay: String,
     workoutDetails: Object,
     createdAt: {
