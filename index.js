@@ -126,14 +126,15 @@ app.post("/logout", (req, res) => {
 app.get("/current-user", async (req, res) => {
     try {
         if (!req.cookies.__session) {
-            return res.status(401).json({ status: false, message: "Unauthenticated!" })
+            console.log("no token")
+            return res.status(401).json({ status: false, message: "Unauthenticated! 1" })
         }
         const response = await clerkClient.verifyToken(req.cookies.__session)
         const user = await User.findOne({
             _id: response.sub
         });
         if (!user) {
-            return res.status(401).json({ status: false, message: "Unauthenticated!" })
+            return res.status(401).json({ status: false, message: "Unauthenticated! 2" })
         }
         console.log("valid token", {
             id: user._id, name: user.name, email: user.email
@@ -142,7 +143,7 @@ app.get("/current-user", async (req, res) => {
     }
     catch (error) {
         console.log("invalid token", error)
-        return res.status(401).json({ status: false, message: "Unauthenticated!" })
+        return res.status(401).json({ status: false, message: error.message })
     }
 
 })
