@@ -149,11 +149,11 @@ app.get("/current-user", async (req, res) => {
 
 })
 async function validate(req, res, next) {
-    if (!req.cookies.__session) {
-        return res.status(401).json({ message: "Unauthenticated!" })
+    if (!req.headers.authorization) {
+        return res.status(401).json({ message: "Unauthenticated!......" })
     }
 
-    const response = await clerkClient.verifyToken(req.cookies.__session)
+    const response = await clerkClient.verifyToken(req.headers.authorization.split(" ")[1])
     if (!response) {
         console.log("invalid token", response)
         return res.status(401).json({ message: "Unauthenticated!" })
