@@ -110,7 +110,7 @@ return { dailyCalories, proteinIntake }
 export async function addBodyWeight(req, res) {
   const { id } = req?.user;
   const date = new Date().toLocaleDateString();
-  const bodyWeightExists = await TrackWeight.findOne({ _id: id, createdAt: date })
+  const bodyWeightExists = await TrackWeight.findOne({ id: id, createdAt: date })
   if (bodyWeightExists) {
     res.json({ status: false, err: "you have already tracked your body weight today." })
   }
@@ -138,7 +138,7 @@ export async function addBodyWeight(req, res) {
 export async function updateBodyWeight(req, res) {
   const { id, email } = req?.user;
   const date = new Date().toLocaleDateString();
-  const data = await TrackWeight.findOneAndUpdate({ _id: id, createdAt: date }, { weight: req.body.weight })
+  const data = await TrackWeight.findOneAndUpdate({ id: id, createdAt: date }, { weight: req.body.weight })
   if (data) {
     //UPDATING the current Logged weight in the users database.
     await User.findOneAndUpdate({ _id: id }, { weight: req.body.weight })
@@ -156,7 +156,7 @@ export async function updateBodyWeight(req, res) {
 export async function getTodayBodyWeight(req, res) {
   const { id } = req?.user;
   const date = new Date().toLocaleDateString();
-  const data = await TrackWeight.findOne({ _id: id, createdAt: date })
+  const data = await TrackWeight.findOne({ id: id, createdAt: date })
   if (data) {
     res.json({ status: true, data: data })
   }
@@ -181,7 +181,7 @@ export async function getTodayMeals(req, res) {
   const { id } =  req?.user;
   try {
     const todayDate = new Date().toLocaleDateString();
-    const mealsData = await TrackFood.find({ addedAt: todayDate, _id: id });
+    const mealsData = await TrackFood.find({ addedAt: todayDate, id: id });
     res.json({ data: mealsData })
   }
   catch (err) {
@@ -202,16 +202,16 @@ export async function addBreakfast(req, res) {
     const todayDate = new Date().toLocaleDateString();
     const body = req.body;
 
-    const result = await TrackFood.findOne({ addedAt: todayDate, _id: id });
+    const result = await TrackFood.findOne({ addedAt: todayDate, id: id });
     if (result) {
       const prevBreakfastData = result.breakfast;
       const newBreakfastData = { ...prevBreakfastData, ...body }
-      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate, _id: id }, { breakfast: newBreakfastData })
+      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate, id: id }, { breakfast: newBreakfastData })
     }
     else {
 
       let breakfast = new TrackFood({
-        _id: id,
+        id: id,
         breakfast: body
       })
       breakfast.save();
@@ -228,15 +228,15 @@ export async function addMorningSnacks(req, res) {
     const { id, email } = req?.user;
     const todayDate = new Date().toLocaleDateString();
     const body = req.body;
-    const result = await TrackFood.findOne({ addedAt: todayDate, _id: id });
+    const result = await TrackFood.findOne({ addedAt: todayDate, id: id });
     if (result) {
       const prevMorningSnacks = result.morningSnacks;
       const newMorningSnacks = { ...prevMorningSnacks, ...body }
-      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate, _id: id }, { morningSnacks: newMorningSnacks })
+      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate, id: id }, { morningSnacks: newMorningSnacks })
     }
     else {
       let morningSnacks = new TrackFood({
-        _id: id,
+        id: id,
         morningSnacks: body
       })
       morningSnacks.save();
@@ -252,15 +252,15 @@ export async function addLunch(req, res) {
     const { id } = req?.user;
     const todayDate = new Date().toLocaleDateString();
     const body = req.body;
-    const result = await TrackFood.findOne({ addedAt: todayDate,  _id: id });
+    const result = await TrackFood.findOne({ addedAt: todayDate,  id: id });
     if (result) {
       const prevLunch = result.lunch;
       const newLunch = { ...prevLunch, ...body }
-      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate,  _id: id }, { lunch: newLunch })
+      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate,  id: id }, { lunch: newLunch })
     }
     else {
       let lunch = new TrackFood({
-        _id: id,
+        id: id,
         lunch: body
       })
       lunch.save();
@@ -277,15 +277,15 @@ export async function addEveningSnacks(req, res) {
     const { id, email } = req?.user;
     const todayDate = new Date().toLocaleDateString();
     const body = req.body;
-    const result = await TrackFood.findOne({ addedAt: todayDate,  _id: id });
+    const result = await TrackFood.findOne({ addedAt: todayDate,  id: id });
     if (result) {
       const prevEveningSnacks = result.eveningSnacks;
       const newEveningSnacks = { ...prevEveningSnacks, ...body }
-      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate,  _id: id }, { eveningSnacks: newEveningSnacks })
+      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate,  id: id }, { eveningSnacks: newEveningSnacks })
     }
     else {
       let eveningSnacks = new TrackFood({
-        _id: id,
+        id: id,
         eveningSnacks: body
       })
       eveningSnacks.save();
@@ -302,11 +302,11 @@ export async function addDinner(req, res) {
     const { id, email } = req?.user;
     const todayDate = new Date().toLocaleDateString();
     const body = req.body;
-    const result = await TrackFood.findOne({ addedAt: todayDate,  _id: id });
+    const result = await TrackFood.findOne({ addedAt: todayDate,  id: id });
     if (result) {
       const prevDinner = result.dinner;
       const newDinner = { ...prevDinner, ...body }
-      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate,  _id: id }, { dinner: newDinner })
+      const x = await TrackFood.findOneAndUpdate({ addedAt: todayDate,  id: id }, { dinner: newDinner })
     }
     else {
       let dinner = new TrackFood({
@@ -340,7 +340,7 @@ export async function getExistingMealNutrients(req, res) {
   const { id, email } = req?.user;
   const { foodName, mealType } = req.body;
   const todayDate = new Date().toLocaleDateString();
-  const info = await TrackFood.findOne({ addedAt: todayDate,  _id: id })
+  const info = await TrackFood.findOne({ addedAt: todayDate,  id: id })
   const meal = info[mealType];
   const obj = {
     [foodName]: {
@@ -352,7 +352,7 @@ export async function getExistingMealNutrients(req, res) {
 
 export async function getAllCustomMeals(req, res) {
   const { id, email } = req?.user;
-  const result = await CustomMeal.find({  _id: id });
+  const result = await CustomMeal.find({  id: id });
   res.json({ data: result });
 }
 
@@ -361,7 +361,7 @@ export async function addCustomMeal(req, res) {
   const { email, mealName, calories, protein, fats, fiber, carbs, sugar } = req.body;
 
   let newMeal = new CustomMeal({
-    _id: id, mealName, calories, protein, fats, fiber, carbs, sugar
+    id: id, mealName, calories, protein, fats, fiber, carbs, sugar
   })
   newMeal.save();
 }
@@ -371,35 +371,35 @@ export async function removeMeal(req, res) {
   const todayDate = new Date().toLocaleDateString();
   const { foodItem, mealType } = req.body;
 console.log("mealType", mealType)
-  let result = await TrackFood.findOne({ addedAt: todayDate,  _id: id })
+  let result = await TrackFood.findOne({ addedAt: todayDate,  id: id })
   switch (mealType) {
     case "breakfast":
       const prevBreakfast = result.breakfast;
       delete prevBreakfast[foodItem];
      
-      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  _id: id }, { breakfast: prevBreakfast })
+      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  id: id }, { breakfast: prevBreakfast })
       break;
 
     case "morningSnacks":
       const prevMorningSnacks = result.morningSnacks;
       delete prevMorningSnacks[foodItem];
     
-      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  _id: id }, { morningSnacks: prevMorningSnacks })
+      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  id: id }, { morningSnacks: prevMorningSnacks })
       break;
     case "lunch":
       const prevLunch = result.lunch;
       delete prevLunch[foodItem];
-      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  _id: id }, { lunch: prevLunch })
+      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  id: id }, { lunch: prevLunch })
       break;
     case "eveningSnacks":
       const prevEveningSnacks = result.eveningSnacks;
       delete prevEveningSnacks[foodItem];
-      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  _id: id }, { eveningSnacks: prevEveningSnacks })
+      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  id: id }, { eveningSnacks: prevEveningSnacks })
       break;
     case "dinner":
       const prevDinner = result.dinner;
       delete prevDinner[foodItem];
-      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  _id: id }, { dinner: prevDinner })
+      await TrackFood.findOneAndUpdate({ addedAt: todayDate,  id: id }, { dinner: prevDinner })
       break;
   }
   // let response = await TrackFood.findOneAndUpdate({ addedAt: todayDate, _id : id })
@@ -429,23 +429,23 @@ export async function addWorkout(req, res) {
     const { id, email } = req?.user;
     const { workoutDay, exercise, weight, reps } = req.body;
     const date = new Date().toLocaleDateString();
-    const workoutInfo = await Workout.findOne({  _id: id, createdAt: date })
+    const workoutInfo = await Workout.findOne({  id: id, createdAt: date })
     if (workoutInfo) {
       if (Object.keys(workoutInfo.workoutDetails).includes(exercise)) {
         const newWorkout = [...workoutInfo.workoutDetails[exercise], { weight, reps }]
         const newWorkoutInfo = { ...workoutInfo.workoutDetails, [exercise]: newWorkout }
-        const addNewWorkout = await Workout.findOneAndUpdate({  _id: id, createdAt: date }, { workoutDetails: newWorkoutInfo })
+        const addNewWorkout = await Workout.findOneAndUpdate({  id: id, createdAt: date }, { workoutDetails: newWorkoutInfo })
         res.json({ status: true, message: "Set added successfully" })
       }
       else {
         const createExercise = { ...workoutInfo.workoutDetails, [exercise]: [{ weight, reps }] }
-        const addNewWorkout = await Workout.findOneAndUpdate({  _id: id, createdAt: date }, { workoutDetails: createExercise })
+        const addNewWorkout = await Workout.findOneAndUpdate({  id: id, createdAt: date }, { workoutDetails: createExercise })
         res.json({ status: true, message: "workout added successfully" })
       }
     }
     else {
       const createWorkout = new Workout({
-        _id: id,
+        id: id,
         workoutDay,
         workoutDetails: { [exercise]: [{ weight, reps }] }
       })
@@ -461,7 +461,7 @@ export async function addWorkout(req, res) {
 export async function getWorkoutDetails(req, res) {
   const { id, email } = req?.user;
   const date = new Date().toLocaleDateString();
-  const workoutDetails = await Workout.findOne({  _id: id, createdAt: date })
+  const workoutDetails = await Workout.findOne({  id: id, createdAt: date })
   res.json({ status: true, parsedRes: workoutDetails });
 }
 
@@ -469,7 +469,7 @@ export async function editWorkoutDay(req, res) {
   const { id, email } = req?.user;
   const date = new Date().toLocaleDateString();
   const { workoutDay } = req.body;
-  const workoutDetails = await Workout.findOneAndUpdate({  _id: id, createdAt: date }, { workoutDay: workoutDay })
+  const workoutDetails = await Workout.findOneAndUpdate({  id: id, createdAt: date }, { workoutDay: workoutDay })
   if (workoutDetails) {
     res.json({ status: true, message: "updated workout day" })
   }
@@ -479,7 +479,7 @@ export async function editSet(req, res) {
   const { id, email } = req?.user;
   const { editExercise, editWeight, editReps, prevWeight, prevReps } = req.body;
   const date = new Date().toLocaleDateString();
-  const workout = await Workout.findOne({  _id: id, createdAt: date })
+  const workout = await Workout.findOne({  id: id, createdAt: date })
   const newWorkout = workout.workoutDetails[editExercise].map(eachSet => {
     if (eachSet.weight === prevWeight && eachSet.reps === prevReps) {
       return (
@@ -494,7 +494,7 @@ export async function editSet(req, res) {
   })
   const newWorkoutDetails = { ...workout.workoutDetails, [editExercise]: newWorkout }
 
-  const updateWorkout = await Workout.findOneAndUpdate({  _id: id, createdAt: date }, { workoutDetails: newWorkoutDetails });
+  const updateWorkout = await Workout.findOneAndUpdate({  id: id, createdAt: date }, { workoutDetails: newWorkoutDetails });
   if (updateWorkout) {
     res.json({ status: true, message: "Edited set successfully" })
   }
@@ -507,7 +507,7 @@ export async function deleteSet(req, res) {
   const { id, email } = req?.user;
   const { editExercise, prevWeight, prevReps } = req.body;
   const date = new Date().toLocaleDateString();
-  const workout = await Workout.findOne({  _id: id, createdAt: date })
+  const workout = await Workout.findOne({  id: id, createdAt: date })
   const newWorkout = workout.workoutDetails[editExercise].filter(eachSet =>
     !((eachSet.weight === prevWeight) && (eachSet.reps === prevReps))
   )
@@ -517,7 +517,7 @@ export async function deleteSet(req, res) {
   if (newWorkoutDetails[editExercise].length === 0) {
     delete newWorkoutDetails[editExercise];
   }
-  const updateWorkout = await Workout.findOneAndUpdate({  _id: id, createdAt: date }, { workoutDetails: newWorkoutDetails });
+  const updateWorkout = await Workout.findOneAndUpdate({  id: id, createdAt: date }, { workoutDetails: newWorkoutDetails });
   if (updateWorkout) {
     res.json({ status: true, message: "Deleted set successfully" })
   }
@@ -529,7 +529,7 @@ export async function deleteSet(req, res) {
 export async function fetchWorkoutForADay(req, res) {
   const { id, email } = req?.user;
   const { selectedDate } = req.body;
-  const workoutInfo = await Workout.findOne({  _id: id, createdAt: selectedDate })
+  const workoutInfo = await Workout.findOne({  id: id, createdAt: selectedDate })
   if (workoutInfo) {
     res.json({ status: true, workoutDetails: workoutInfo.workoutDetails })
   }
@@ -585,14 +585,14 @@ export async function addWater(req, res) {
   const { id, email } = req?.user;
   try {
     const date = new Date().toLocaleDateString();
-    const foodData = await TrackFood.findOne({ addedAt: date,  _id: id })
+    const foodData = await TrackFood.findOne({ addedAt: date,  id: id })
 
     if (foodData) {
       if (foodData.waterIntake) {
-        const updatedFoodData = await TrackFood.findOneAndUpdate({ addedAt: date,  _id: id }, { waterIntake: foodData.waterIntake + req.body.qty })
+        const updatedFoodData = await TrackFood.findOneAndUpdate({ addedAt: date,  id: id }, { waterIntake: foodData.waterIntake + req.body.qty })
       }
       else {
-        const foodData = await TrackFood.findOneAndUpdate({ addedAt: date,  _id: id }, { waterIntake: req.body.qty })
+        const foodData = await TrackFood.findOneAndUpdate({ addedAt: date,  id: id }, { waterIntake: req.body.qty })
       }
     }
     else {
@@ -613,7 +613,7 @@ export async function fetchWaterIntake(req, res) {
   try {
     const { id, email } = req?.user;
     const date = new Date().toLocaleDateString();
-    const foodData = await TrackFood.findOne({ addedAt: date,  _id: id })
+    const foodData = await TrackFood.findOne({ addedAt: date,  id: id })
     if (foodData) {
       res.json({ status: true, waterIntake: foodData.waterIntake })
     }
