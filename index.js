@@ -26,8 +26,8 @@ const app = express();
 app.use(cookieParser())
 
 app.use(cors({
-    origin: 'http://localhost:3000',
-    // origin: "https://fitness-freak-xi.vercel.app",
+    // origin: 'http://localhost:3000',
+    origin: "https://fitness-freak-xi.vercel.app",
     // origin: "https://fitness-freak-sami07s-projects.vercel.app",
     // origin : "*",
     credentials: true,
@@ -100,7 +100,7 @@ app.post("/save-user", async (req, res) => {
             email: email,
             name: name
         }
-        
+
             res.json({ message: "User saved successfully" });
         } else {
             console.log("User already exists")
