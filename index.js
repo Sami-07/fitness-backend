@@ -125,6 +125,7 @@ app.post("/logout", (req, res) => {
 // app.use(validate);
 app.get("/current-user", async (req, res) => {
     try {
+        console.log("cookies", req.cookies)
         if (!req.cookies.__session) {
             console.log("no token")
             return res.status(401).json({ status: false, message: "Unauthenticated! 1" })
