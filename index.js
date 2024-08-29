@@ -125,12 +125,12 @@ app.post("/logout", (req, res) => {
 // app.use(validate);
 app.get("/current-user", async (req, res) => {
     try {
-        console.log("cookies", req.cookies)
-        if (!req.cookies.__session) {
+       const token = req.headers.authorization.split(" ")[1];
+        if (!token) {
             console.log("no token")
             return res.status(401).json({ status: false, message: "Unauthenticated! 1" })
         }
-        const response = await clerkClient.verifyToken(req.cookies.__session)
+        const response = await clerkClient.verifyToken(token)
         const user = await User.findOne({
             _id: response.sub
         });
