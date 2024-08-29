@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 
 const workoutSchema = mongoose.Schema({
 
-  _id : String,
+  _id: {
+    type: String,
+    required: true,
+    unique : false // this is not a unique field since it is not the primary key of the collection. It is the user id
+},
     workoutDay: String,
     workoutDetails: Object,
     createdAt: {
